@@ -1,327 +1,206 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Image Generator</title>
-    <style>
-        :root {
-            --primary-color: #2d3436;
-            --accent-color: #0984e3;
-            --danger-color: #d63031;
-            --success-color: #00b894;
-            --neutral-bg: #f5f6fa;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Accessible Resource AI Image Generator</title>
+  <style>
+    :root {
+      --bg-light: #f4f4f4;
+      --bg-dark: #121212;
+      --text-light: #ffffff;
+      --text-dark: #000000;
+      --primary: linear-gradient(to right, #6a11cb, #2575fc);
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg-light);
+      color: var(--text-dark);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
 
-        body {
-            background-color: var(--neutral-bg);
-            min-height: 100vh;
-            padding: 2rem;
-            color: var(--primary-color);
-            line-height: 1.6;
-        }
+    body.dark-mode {
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+    }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 2rem;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-        }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      padding: 20px;
+    }
 
-        h1 {
-            text-align: center;
-            margin-bottom: 2rem;
-            color: var(--accent-color);
-        }
+    .toggle-btn {
+      float: right;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 25px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
 
-        .description {
-            text-align: center;
-            margin-bottom: 2rem;
-            color: var(--primary-color);
-            opacity: 0.8;
-        }
+    h1 {
+      font-size: 26px;
+      background: var(--primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
 
-        .input-group {
-            margin-bottom: 1.5rem;
-        }
+    .slogan {
+      font-style: italic;
+      font-size: 16px;
+      opacity: 0.8;
+      margin-bottom: 10px;
+    }
 
-        textarea {
-            width: 100%;
-            padding: 1rem;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            resize: vertical;
-            min-height: 150px;
-            font-size: 1rem;
-            margin-bottom: 1rem;
-            transition: border 0.3s ease;
-        }
+    .description {
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
 
-        textarea:focus {
-            outline: none;
-            border-color: var(--accent-color);
-        }
+    textarea {
+      width: 100%;
+      height: 100px;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      resize: vertical;
+      outline: none;
+      margin-bottom: 10px;
+    }
 
-        .button-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
+    .buttons button {
+      background: var(--primary);
+      color: #fff;
+      padding: 10px 20px;
+      margin: 5px 5px 10px 0;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
 
-        button {
-            padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
+    .buttons button:hover {
+      opacity: 0.85;
+    }
 
-        button:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-        }
+    #imagePreview {
+      margin-top: 20px;
+      display: none;
+      text-align: center;
+    }
 
-        button:active {
-            transform: translateY(0);
-        }
+    #imagePreview img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin-top: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
 
-        .generate-btn {
-            background-color: var(--accent-color);
-            color: white;
-        }
-
-        .reset-btn {
-            background-color: var(--danger-color);
-            color: white;
-        }
-
-        .clear-btn {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .download-btn {
-            background-color: var(--success-color);
-            color: white;
-            display: none;
-        }
-
-        .image-container {
-            position: relative;
-            width: 100%;
-            max-width: 512px;
-            margin: 0 auto;
-            display: none;
-            margin-bottom: 1rem;
-        }
-
-        .generated-image {
-            width: 100%;
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            margin: 1rem 0;
-            color: var(--accent-color);
-        }
-
-        .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-radius: 50%;
-            border-top: 4px solid var(--accent-color);
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .error-message {
-            color: var(--danger-color);
-            text-align: center;
-            margin: 1rem 0;
-            display: none;
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 1rem;
-            }
-            
-            .container {
-                padding: 1.5rem;
-            }
-            
-            .button-group {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 13px;
+      opacity: 0.6;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>AI Image Generator</h1>
-        <p class="description">Transform your text into stunning images with AI</p>
-        
-        <div class="input-group">
-            <textarea id="promptInput" placeholder="Describe the image you want to generate (e.g. 'A sunset over mountains with a lake in the foreground')"></textarea>
-            <div class="button-group">
-                <button class="generate-btn" onclick="generateImage()">
-                    <span class="btn-icon">🖼️</span> Generate
-                </button>
-                <button class="reset-btn" onclick="resetApp()">
-                    <span class="btn-icon">🔄</span> Reset
-                </button>
-                <button class="clear-btn" onclick="clearText()">
-                    <span class="btn-icon">🗑️</span> Clear
-                </button>
-                <button class="download-btn" id="downloadBtn" onclick="downloadImage()">
-                    <span class="btn-icon">⬇️</span> Download
-                </button>
-            </div>
-        </div>
-
-        <div class="loading" id="loadingIndicator">
-            <div class="spinner"></div>
-            <p>Generating your image...</p>
-        </div>
-
-        <div class="error-message" id="errorMessage"></div>
-
-        <div class="image-container" id="imageContainer">
-            <img class="generated-image" id="generatedImage" alt="Generated image will appear here">
-        </div>
+  <div class="container">
+    <button class="toggle-btn" onclick="toggleMode()">Toggle Mode</button>
+    <h1>Accessible Resource AI Image Generator</h1>
+    <div class="slogan">Realizing Dreams Through the Touch of Technology</div>
+    <div id="greeting"></div>
+    <div class="description">
+      Transform your imagination into stunning AI images.<br>
+      <b>Developed by the Accessible Resource Team</b>
     </div>
 
-    <script>
-        const API_TOKEN = "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";
+    <textarea id="promptInput" placeholder="Describe the image you want to generate…"></textarea>
 
-        async function generateImage() {
-            const prompt = document.getElementById('promptInput').value.trim();
-            if (!prompt) {
-                showError('Please enter a description');
-                return;
-            }
+    <div class="buttons">
+      <button onclick="clearText()">Clear</button>
+      <button onclick="generateImage()">Generate</button>
+      <button onclick="regenerateImage()" id="regenBtn" style="display: none;">Regenerate</button>
+    </div>
 
-            // Show loading indicator
-            document.getElementById('loadingIndicator').style.display = 'block';
-            document.getElementById('errorMessage').style.display = 'none';
-            document.getElementById('imageContainer').style.display = 'none';
-            document.getElementById('downloadBtn').style.display = 'none';
+    <div id="imagePreview">
+      <p>Here is your AI-generated image!</p>
+      <img id="generatedImage" src="" alt="Generated Image"/>
+      <br/>
+      <button onclick="downloadImage()">Download Image</button>
+    </div>
+  </div>
 
-            try {
-                const response = await fetch(
-                    "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2-1",
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": `Bearer ${API_TOKEN}`
-                        },
-                        body: JSON.stringify({ 
-                            inputs: prompt,
-                            options: { wait_for_model: true }
-                        }),
-                    }
-                );
+  <footer>
+    &copy; 2025 Accessible Resource. All rights reserved.
+  </footer>
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Failed to generate image');
-                }
+  <script>
+    function toggleMode() {
+      document.body.classList.toggle('dark-mode');
+    }
 
-                const imageBlob = await response.blob();
-                const imageUrl = URL.createObjectURL(imageBlob);
-                
-                const imageContainer = document.getElementById('imageContainer');
-                const generatedImage = document.getElementById('generatedImage');
-                const downloadBtn = document.getElementById('downloadBtn');
+    function clearText() {
+      document.getElementById("promptInput").value = "";
+      document.getElementById("imagePreview").style.display = "none";
+      document.getElementById("regenBtn").style.display = "none";
+    }
 
-                generatedImage.src = imageUrl;
-                imageContainer.style.display = 'block';
-                downloadBtn.style.display = 'flex';
-                
-                // Revoke previous object URL if exists
-                if (generatedImage.dataset.prevUrl) {
-                    URL.revokeObjectURL(generatedImage.dataset.prevUrl);
-                }
-                generatedImage.dataset.prevUrl = imageUrl;
+    function getGreeting() {
+      const hour = new Date().getHours();
+      if (hour < 12) return "Good Morning! Warm greetings from the Accessible Resource team.";
+      else if (hour < 18) return "Good Afternoon! Warm greetings from the Accessible Resource team.";
+      else return "Good Evening! Warm greetings from the Accessible Resource team.";
+    }
 
-            } catch (error) {
-                console.error('Error:', error);
-                showError(error.message || 'Error generating image. Please try again.');
-            } finally {
-                document.getElementById('loadingIndicator').style.display = 'none';
-            }
-        }
+    document.getElementById("greeting").innerText = getGreeting();
 
-        function downloadImage() {
-            const link = document.createElement('a');
-            link.download = 'ai-generated-image.png';
-            link.href = document.getElementById('generatedImage').src;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
+    let lastPrompt = "";
 
-        function clearText() {
-            document.getElementById('promptInput').value = '';
-            document.getElementById('errorMessage').style.display = 'none';
-        }
+    function generateImage() {
+      const prompt = document.getElementById("promptInput").value.trim();
+      if (!prompt) return alert("Please enter a description.");
 
-        function resetApp() {
-            clearText();
-            const generatedImage = document.getElementById('generatedImage');
-            if (generatedImage.dataset.prevUrl) {
-                URL.revokeObjectURL(generatedImage.dataset.prevUrl);
-                delete generatedImage.dataset.prevUrl;
-            }
-            document.getElementById('imageContainer').style.display = 'none';
-            document.getElementById('downloadBtn').style.display = 'none';
-            document.getElementById('errorMessage').style.display = 'none';
-        }
+      lastPrompt = prompt;
+      const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?model=flux&enhance=true&nologo=true`;
+      const img = document.getElementById("generatedImage");
 
-        function showError(message) {
-            const errorElement = document.getElementById('errorMessage');
-            errorElement.textContent = message;
-            errorElement.style.display = 'block';
-        }
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        document.getElementById("imagePreview").style.display = "block";
+        document.getElementById("regenBtn").style.display = "inline-block";
+      };
 
-        // Add keyboard shortcut (Ctrl+Enter or Cmd+Enter) to generate image
-        document.getElementById('promptInput').addEventListener('keydown', function(e) {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                generateImage();
-            }
-        });
-    </script>
+      img.src = imageUrl;
+      img.alt = prompt;
+    }
+
+    function regenerateImage() {
+      if (!lastPrompt) return;
+      generateImage();
+    }
+
+    function downloadImage() {
+      const img = document.getElementById("generatedImage");
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+      canvas.toBlob(function (blob) {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        const timestamp = new Date().getTime();
+        link.download = `Accessible_Resource_Image_${timestamp}.png`;
+        link.click();
+      }, "image/png");
+    }
+  </script>
 </body>
 </html>

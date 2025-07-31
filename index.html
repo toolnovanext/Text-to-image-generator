@@ -1,206 +1,384 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Accessible Resource AI Image Generator</title>
-  <style>
-    :root {
-      --bg-light: #f4f4f4;
-      --bg-dark: #121212;
-      --text-light: #ffffff;
-      --text-dark: #000000;
-      --primary: linear-gradient(to right, #6a11cb, #2575fc);
-    }
-
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: var(--bg-light);
-      color: var(--text-dark);
-      transition: background 0.3s ease, color 0.3s ease;
-    }
-
-    body.dark-mode {
-      background-color: var(--bg-dark);
-      color: var(--text-light);
-    }
-
-    .container {
-      max-width: 700px;
-      margin: auto;
-      padding: 20px;
-    }
-
-    .toggle-btn {
-      float: right;
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 25px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    h1 {
-      font-size: 26px;
-      background: var(--primary);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .slogan {
-      font-style: italic;
-      font-size: 16px;
-      opacity: 0.8;
-      margin-bottom: 10px;
-    }
-
-    .description {
-      font-size: 14px;
-      margin-bottom: 20px;
-    }
-
-    textarea {
-      width: 100%;
-      height: 100px;
-      padding: 12px;
-      font-size: 16px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      resize: vertical;
-      outline: none;
-      margin-bottom: 10px;
-    }
-
-    .buttons button {
-      background: var(--primary);
-      color: #fff;
-      padding: 10px 20px;
-      margin: 5px 5px 10px 0;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: 0.2s ease;
-    }
-
-    .buttons button:hover {
-      opacity: 0.85;
-    }
-
-    #imagePreview {
-      margin-top: 20px;
-      display: none;
-      text-align: center;
-    }
-
-    #imagePreview img {
-      max-width: 100%;
-      border-radius: 10px;
-      margin-top: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    }
-
-    footer {
-      text-align: center;
-      margin-top: 40px;
-      font-size: 13px;
-      opacity: 0.6;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Generator - Your Daily Companion for Image Generation Tasks</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .input-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        #promptInput {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            min-width: 200px;
+        }
+        #sendButton {
+            padding: 12px 25px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        #sendButton:hover {
+            background-color: #218838;
+        }
+        #sendButton:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .output-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border: 1px dashed #e0e0e0;
+            text-align: center;
+        }
+        #promptDisplay, #textOutput {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-left: 5px solid #007bff;
+            border-radius: 4px;
+            word-wrap: break-word;
+        }
+        #imageOutput {
+            max-width: 100%;
+            height: auto;
+            margin-top: 20px;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: none;
+            transition: opacity 0.5s ease-in-out;
+            opacity: 0;
+        }
+        #imageOutput.show {
+            opacity: 1;
+        }
+        #downloadButton, #generateAnotherButton {
+            display: none;
+            margin-top: 20px;
+            padding: 12px 25px;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        #downloadButton {
+            background-color: #007bff;
+            margin-right: 10px;
+        }
+        #downloadButton:hover {
+            background-color: #0056b3;
+        }
+        #generateAnotherButton {
+            background-color: #6c757d;
+        }
+        #generateAnotherButton:hover {
+            background-color: #5a6268;
+        }
+        #error {
+            color: #dc3545;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+            display: none;
+            font-weight: bold;
+        }
+        .loading {
+            text-align: center;
+            margin-top: 20px;
+            font-style: italic;
+            color: #6c757d;
+            display: none;
+        }
+        .prompt-list {
+            margin-bottom: 20px;
+            display: none;
+        }
+        .prompt-list.show {
+            display: block;
+        }
+        .prompt-item {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .prompt-item:hover {
+            background-color: #e9ecef;
+        }
+        .toggle-prompts {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        .toggle-prompts:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <button class="toggle-btn" onclick="toggleMode()">Toggle Mode</button>
-    <h1>Accessible Resource AI Image Generator</h1>
-    <div class="slogan">Realizing Dreams Through the Touch of Technology</div>
-    <div id="greeting"></div>
-    <div class="description">
-      Transform your imagination into stunning AI images.<br>
-      <b>Developed by the Accessible Resource Team</b>
+    <div class="container">
+        <h1>AI Image Generator - Your Daily Companion for Image Generation Tasks</h1>
+<p>developers: SM ripon and Sujan Rai at team of accessible resource.</p>
+<p>choose a pre written template prompt and get your imaginations start visualizing.</p>
+
+        <button class="toggle-prompts" role="button" aria-expanded="false">Show Template Prompts</button>
+        <div class="prompt-list" id="promptList">
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A futuristic cyberpunk cityscape at night with neon lights')">A futuristic cyberpunk cityscape at night with neon lights</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A serene Japanese garden with cherry blossoms in spring')">A serene Japanese garden with cherry blossoms in spring</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A majestic dragon soaring through a stormy sky')">A majestic dragon soaring through a stormy sky</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A cozy medieval tavern filled with adventurers')">A cozy medieval tavern filled with adventurers</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('An underwater coral reef teeming with colorful fish')">An underwater coral reef teeming with colorful fish</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A steampunk airship flying over a Victorian city')">A steampunk airship flying over a Victorian city</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A post-apocalyptic desert with abandoned vehicles')">A post-apocalyptic desert with abandoned vehicles</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A magical forest with glowing mushrooms and fairies')">A magical forest with glowing mushrooms and fairies</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A futuristic space station orbiting a distant planet')">A futuristic space station orbiting a distant planet</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A vibrant festival in a colorful Moroccan market')">A vibrant festival in a colorful Moroccan market</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A snowy mountain landscape under the aurora borealis')">A snowy mountain landscape under the aurora borealis</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A gothic cathedral interior with stained glass windows')">A gothic cathedral interior with stained glass windows</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A bustling alien marketplace on a distant planet')">A bustling alien marketplace on a distant planet</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A tranquil beach at sunset with palm trees')">A tranquil beach at sunset with palm trees</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A retro 80s arcade filled with neon lights and games')">A retro 80s arcade filled with neon lights and games</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('An enchanted castle floating in the sky')">An enchanted castle floating in the sky</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A spaceship cockpit overlooking a distant galaxy')">A spaceship cockpit overlooking a distant galaxy</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A magical library with flying books and glowing runes')">A magical library with flying books and glowing runes</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A jungle temple being reclaimed by nature')">A jungle temple being reclaimed by nature</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A cozy cabin in the woods during snowfall')">A cozy cabin in the woods during snowfall</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A neon-lit street race through a futuristic city')">A neon-lit street race through a futuristic city</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('An ancient underwater city with glowing artifacts')">An ancient underwater city with glowing artifacts</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A battle between giant robots in a ruined metropolis')">A battle between giant robots in a ruined metropolis</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A haunted Victorian mansion at night')">A haunted Victorian mansion at night</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A peaceful lake surrounded by autumn trees')">A peaceful lake surrounded by autumn trees</div>
+            <!-- Additional 25 template prompts -->
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A whimsical treehouse village in a lush forest')">A whimsical treehouse village in a lush forest</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A futuristic robot workshop with sparks flying')">A futuristic robot workshop with sparks flying</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A vibrant sunset over a vast savanna with wildlife')">A vibrant sunset over a vast savanna with wildlife</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A mystical cave filled with glowing crystals')">A mystical cave filled with glowing crystals</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A retro diner on a desert highway at dusk')">A retro diner on a desert highway at dusk</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A floating island with cascading waterfalls')">A floating island with cascading waterfalls</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A medieval knight tournament in a grand arena')">A medieval knight tournament in a grand arena</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A colorful hot air balloon festival over rolling hills')">A colorful hot air balloon festival over rolling hills</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A futuristic underwater research lab')">A futuristic underwater research lab</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A snowy village illuminated by festive lights')">A snowy village illuminated by festive lights</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A steampunk laboratory with intricate machinery')">A steampunk laboratory with intricate machinery</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A desert oasis with palm trees and clear water')">A desert oasis with palm trees and clear water</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A futuristic train speeding through a neon city')">A futuristic train speeding through a neon city</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A magical circus under a starry night sky')">A magical circus under a starry night sky</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A serene mountain temple at sunrise')">A serene mountain temple at sunrise</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A pirate ship sailing through a stormy sea')">A pirate ship sailing through a stormy sea</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A bustling sci-fi spaceport with diverse aliens')">A bustling sci-fi spaceport with diverse aliens</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A cozy bookstore with warm lighting and bookshelves')">A cozy bookstore with warm lighting and bookshelves</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A vibrant coral reef with a sunken pirate ship')">A vibrant coral reef with a sunken pirate ship</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A futuristic gladiator arena with holographic displays')">A futuristic gladiator arena with holographic displays</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A tranquil meadow with wildflowers and butterflies')">A tranquil meadow with wildflowers and butterflies</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A steampunk cityscape with clockwork towers')">A steampunk cityscape with clockwork towers</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A mystical portal in an ancient forest')">A mystical portal in an ancient forest</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A futuristic fashion show with avant-garde designs')">A futuristic fashion show with avant-garde designs</div>
+            <div class="prompt-item" role="prompt" onclick="loadPrompt('A vibrant autumn festival in a small town')">A vibrant autumn festival in a small town</div>
+        </div>
+        <div class="input-section">
+<p>craft a beautiful thought...</p>
+
+            <input type="text" id="promptInput" placeholder="Enter your imagination to visualize reality...">
+            <button id="sendButton" role="button">Send Prompt</button>
+        </div>
+        <div id="error"></div>
+        <div class="loading" id="loadingMessage" role="progress-indicator">Generating your imagination...</div>
+        <div class="output-section">
+            <div id="promptDisplay"></div>
+            <div id="textOutput"></div>
+            <img id="imageOutput" alt="AI generated image">
+            <button id="downloadButton">Download Image</button>
+            <button id="generateAnotherButton">Generate Another Image</button>
+        </div>
     </div>
 
-    <textarea id="promptInput" placeholder="Describe the image you want to generate…"></textarea>
+    <script>
+        const GEMINI_API_KEY = 'AIzaSyC2Fsjk3yCRA8hDVYgg5LlMn4sxwoJJaWU';
 
-    <div class="buttons">
-      <button onclick="clearText()">Clear</button>
-      <button onclick="generateImage()">Generate</button>
-      <button onclick="regenerateImage()" id="regenBtn" style="display: none;">Regenerate</button>
-    </div>
+        const sendButton = document.getElementById('sendButton');
+        const promptInput = document.getElementById('promptInput');
+        const promptDisplay = document.getElementById('promptDisplay');
+        const textOutput = document.getElementById('textOutput');
+        const imageOutput = document.getElementById('imageOutput');
+        const downloadButton = document.getElementById('downloadButton');
+        const generateAnotherButton = document.getElementById('generateAnotherButton');
+        const errorDiv = document.getElementById('error');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const togglePrompts = document.querySelector('.toggle-prompts');
+        const promptList = document.getElementById('promptList');
 
-    <div id="imagePreview">
-      <p>Here is your AI-generated image!</p>
-      <img id="generatedImage" src="" alt="Generated Image"/>
-      <br/>
-      <button onclick="downloadImage()">Download Image</button>
-    </div>
-  </div>
+        togglePrompts.addEventListener('click', () => {
+            const isExpanded = togglePrompts.getAttribute('aria-expanded') === 'true';
+            togglePrompts.setAttribute('aria-expanded', !isExpanded);
+            togglePrompts.textContent = isExpanded ? 'Show Template Prompts' : 'Hide Template Prompts';
+            promptList.classList.toggle('show');
+        });
 
-  <footer>
-    &copy; 2025 Accessible Resource. All rights reserved.
-  </footer>
+        function loadPrompt(prompt) {
+            promptInput.value = prompt;
+        }
 
-  <script>
-    function toggleMode() {
-      document.body.classList.toggle('dark-mode');
-    }
+        function getFormattedDateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            return `${year}${month}${day}_${hours}${minutes}${seconds}`;
+        }
 
-    function clearText() {
-      document.getElementById("promptInput").value = "";
-      document.getElementById("imagePreview").style.display = "none";
-      document.getElementById("regenBtn").style.display = "none";
-    }
+        sendButton.addEventListener('click', async () => {
+            const prompt = promptInput.value.trim();
+            if (!prompt) {
+                showError('Please enter a prompt to generate an image.');
+                return;
+            }
 
-    function getGreeting() {
-      const hour = new Date().getHours();
-      if (hour < 12) return "Good Morning! Warm greetings from the Accessible Resource team.";
-      else if (hour < 18) return "Good Afternoon! Warm greetings from the Accessible Resource team.";
-      else return "Good Evening! Warm greetings from the Accessible Resource team.";
-    }
+            hideAllOutputElements();
+            showError('');
+            sendButton.disabled = true;
+            sendButton.textContent = 'Generating...';
+            loadingMessage.style.display = 'block';
 
-    document.getElementById("greeting").innerText = getGreeting();
+            try {
+                const API_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent?key=${GEMINI_API_KEY}`;
+                
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: prompt
+                            }]
+                        }],
+                        generationConfig: {
+                            responseModalities: ["TEXT", "IMAGE"]
+                        }
+                    })
+                });
 
-    let lastPrompt = "";
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`API request failed: ${response.status} - ${errorData.error.message || response.statusText}`);
+                }
 
-    function generateImage() {
-      const prompt = document.getElementById("promptInput").value.trim();
-      if (!prompt) return alert("Please enter a description.");
+                const data = await response.json();
+                
+                const imagePart = data?.candidates?.[0]?.content?.parts?.find(part => part.inlineData && part.inlineData.mimeType.startsWith('image/'));
 
-      lastPrompt = prompt;
-      const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?model=flux&enhance=true&nologo=true`;
-      const img = document.getElementById("generatedImage");
+                if (imagePart && imagePart.inlineData && imagePart.inlineData.data) {
+                    const imageBase64 = imagePart.inlineData.data;
+                    imageOutput.src = `data:${imagePart.inlineData.mimeType};base64,${imageBase64}`;
+                    imageOutput.alt = `AI generated image`;
+                    imageOutput.classList.add('show');
+                    imageOutput.style.display = 'block';
 
-      img.crossOrigin = "anonymous";
-      img.onload = () => {
-        document.getElementById("imagePreview").style.display = "block";
-        document.getElementById("regenBtn").style.display = "inline-block";
-      };
+                    const fileName = `toolnova_image_generator_${getFormattedDateTime()}.png`;
+                    downloadButton.onclick = () => {
+                        const link = document.createElement('a');
+                        link.href = `data:${imagePart.inlineData.mimeType};base64,${imageBase64}`;
+                        link.download = fileName;
+                        link.click();
+                    };
+                    downloadButton.style.display = 'inline-block';
+                }
+                
+                const textPart = data?.candidates?.[0]?.content?.parts?.find(part => part.text);
+                if (textPart && textPart.text) {
+                    textOutput.innerHTML = `<strong>AI:</strong> ${textPart.text}`;
+                } else {
+                    textOutput.innerHTML = `<strong>AI:</strong> No accompanying text generated.`;
+                }
 
-      img.src = imageUrl;
-      img.alt = prompt;
-    }
+                promptDisplay.innerHTML = `<strong>Your Prompt:</strong> ${prompt}`;
+                generateAnotherButton.style.display = 'inline-block';
 
-    function regenerateImage() {
-      if (!lastPrompt) return;
-      generateImage();
-    }
+            } catch (error) {
+                showError(`Error generating image: ${error.message}`);
+                console.error("Detailed error:", error);
+            } finally {
+                sendButton.disabled = false;
+                sendButton.textContent = 'Send Prompt';
+                loadingMessage.style.display = 'none';
+            }
+        });
 
-    function downloadImage() {
-      const img = document.getElementById("generatedImage");
-      const canvas = document.createElement("canvas");
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0);
-      canvas.toBlob(function (blob) {
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        const timestamp = new Date().getTime();
-        link.download = `Accessible_Resource_Image_${timestamp}.png`;
-        link.click();
-      }, "image/png");
-    }
-  </script>
+        generateAnotherButton.addEventListener('click', () => {
+            hideAllOutputElements();
+            promptInput.value = '';
+            promptList.classList.remove('show');
+            togglePrompts.setAttribute('aria-expanded', 'false');
+            togglePrompts.textContent = 'Show Template Prompts';
+        });
+
+        function showError(message) {
+            if (message) {
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+            } else {
+                errorDiv.style.display = 'none';
+                errorDiv.textContent = '';
+            }
+        }
+
+        function hideAllOutputElements() {
+            imageOutput.style.display = 'none';
+            imageOutput.classList.remove('show');
+            downloadButton.style.display = 'none';
+            generateAnotherButton.style.display = 'none';
+            promptDisplay.innerHTML = '';
+            textOutput.innerHTML = '';
+        }
+    </script>
 </body>
 </html>
